@@ -1,0 +1,31 @@
+{
+    "name": "stegeman/symfony-messenger-cloud-events",
+    "description": "Symfony Messenger Cloud Events",
+    "type": "library",
+    "license": "MIT",
+    "version": "0.0.1-ALPHA",
+    "authors": [
+        {
+            "name": "Rene Terstegen",
+            "email": "rene@reneterstegen.eu"
+        }
+    ],
+    "require": {
+        "symfony/messenger": "^7.1",
+        "cloudevents/sdk-php": "^1.1",
+        "jms/serializer": "^3.30"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Stegeman\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Stegeman\\": "tests/"
+        }
+    }
+}

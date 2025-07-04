@@ -1,0 +1,5 @@
+services:
+  php-fpm:
+    build: ./docker
+    volumes:
+      - .:/var/www/html
