@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Stegeman\Messenger\Unit\Messenger\CloudEvents;
+namespace Stegeman\Tests\Messenger\Unit\Messenger\CloudEvents;
 
 use CloudEvents\CloudEventInterface;
 use CloudEvents\V1\CloudEventTrait;
@@ -27,14 +27,15 @@ class CloudEventsSerializerTest extends TestCase
 
         $serializer = new CloudEventsSerializer(
             cloudEventFactory: $this->createCloudEventFactoryWithBuildForEventCall(),
-            normalizer: $this->createNormalizerWithNormalizeCall()
+            normalizer: $this->createNormalizerWithNormalizeCall(),
+            serializer: $this->createSerializerWithSerializeCall()
         );
 
         $encodedEnvelope = $serializer->encode($envelope);
 
         self::assertSame(
             [
-                'body' => ['just-an-array' => 'not the responsibility of this class'],
+                'body' => '{ "just-an-array": "not the responsibility of this class"}',
                 'headers' => []
             ],
             $encodedEnvelope
@@ -86,6 +87,17 @@ class CloudEventsSerializerTest extends TestCase
     private function createNormalizerInterface(): NormalizerInterface&MockObject
     {
         return $this->createMock(NormalizerInterface::class);
+    }
+
+    private function createSerializerWithSerializeCall(): SerializerInterface
+    {
+        $serializer = $this->createSerializerInterface();
+
+        $serializer->expects($this->once())
+            ->method('serialize')
+            ->willReturn('{ "just-an-array": "not the responsibility of this class"}');
+
+        return $serializer;
     }
 
     private function createSerializerInterface(): SerializerInterface&MockObject

@@ -1,6 +1,6 @@
 <?php
 
-namespace Stegeman\Tests\Messenger\Unit\Messenger\CloudEvents;
+namespace Stegeman\Tests\Messenger\Integration\Messenger\CloudEvents;
 
 class DummyEvent
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Stegeman\Messenger\Unit\Messenger\CloudEvents\Normalizer\V1;
+namespace Stegeman\Tests\Messenger\Unit\Messenger\CloudEvents\Normalizer\V1;
 
 use CloudEvents\Serializers\Normalizers\V1\NormalizerInterface;
 use CloudEvents\V1\CloudEventInterface;

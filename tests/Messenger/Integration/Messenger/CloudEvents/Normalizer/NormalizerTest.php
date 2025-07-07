@@ -1,13 +1,13 @@
 <?php
 
-namespace Messenger\Integration\Messenger\CloudEvents\Normalizer;
+namespace Stegeman\Tests\Messenger\Integration\Messenger\CloudEvents\Normalizer;
 
 use CloudEvents\Serializers\Normalizers\V1\Normalizer as SdkNormalizer;
 use CloudEvents\V1\CloudEvent;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Stegeman\Messenger\CloudEvents\Normalizer\V1\Normalizer;
-use Tests\Stegeman\Messenger\Unit\Messenger\CloudEvents\DummyEvent;
+use Stegeman\Tests\Messenger\Unit\Messenger\CloudEvents\DummyEvent;
 
 class NormalizerTest extends TestCase
 {
