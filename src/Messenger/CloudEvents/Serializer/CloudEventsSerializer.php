@@ -24,6 +24,11 @@ class CloudEventsSerializer implements SerializerInterface
     {
         $event = $this->cloudEventFactory->buildForEnvelope($envelope);
 
-        return $this->normalizer->normalize($event);
+        $normalizedEvent = $this->normalizer->normalize($event);
+
+        return [
+            'body' => $normalizedEvent,
+            'headers' => []
+        ];
     }
 }

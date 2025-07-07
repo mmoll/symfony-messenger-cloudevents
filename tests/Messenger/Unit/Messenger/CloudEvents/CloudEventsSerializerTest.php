@@ -1,10 +1,11 @@
 <?php
 
-namespace Tests\Stegeman\Messenger\CloudEvents;
+namespace Tests\Stegeman\Messenger\Unit\Messenger\CloudEvents;
 
 use CloudEvents\CloudEventInterface;
 use CloudEvents\V1\CloudEventTrait;
 use DateTimeImmutable;
+use JMS\Serializer\SerializerInterface;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -32,7 +33,10 @@ class CloudEventsSerializerTest extends TestCase
         $encodedEnvelope = $serializer->encode($envelope);
 
         self::assertSame(
-            ['just-an-array' => 'not the responsibility of this class'],
+            [
+                'body' => ['just-an-array' => 'not the responsibility of this class'],
+                'headers' => []
+            ],
             $encodedEnvelope
         );
     }
@@ -82,5 +86,10 @@ class CloudEventsSerializerTest extends TestCase
     private function createNormalizerInterface(): NormalizerInterface&MockObject
     {
         return $this->createMock(NormalizerInterface::class);
+    }
+
+    private function createSerializerInterface(): SerializerInterface&MockObject
+    {
+        return $this->createMock(SerializerInterface::class);
     }
 }

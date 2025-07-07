@@ -3,7 +3,7 @@
     "description": "Symfony Messenger Cloud Events",
     "type": "library",
     "license": "MIT",
-    "version": "0.0.1-ALPHA",
+    "version": "0.0.2-ALPHA",
     "authors": [
         {
             "name": "Rene Terstegen",
@@ -25,7 +25,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\Stegeman\\": "tests/"
+            "Stegeman\\Tests\\": "tests/"
         }
     }
 }

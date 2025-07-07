@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Tests\Messenger\CloudEvents\Factory\V1;
+namespace Tests\Stegeman\Messenger\Unit\Messenger\CloudEvents\Factory\V1;
 
-use PHPUnit\Framework\MockObject\MockObject;
-use Stegeman\Messenger\CloudEvents\Factory\V1\CloudEventFactory;
 use CloudEvents\CloudEventInterface;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Stegeman\Messenger\CloudEvents\Serializer\MessageRegistryInterface;
+use Stegeman\Messenger\CloudEvents\Factory\V1\CloudEventFactory;
 use Stegeman\Messenger\CloudEvents\Serializer\IdGeneratorInterface;
+use Stegeman\Messenger\CloudEvents\Serializer\MessageRegistryInterface;
 use Symfony\Component\Messenger\Envelope;
-use Tests\Stegeman\Messenger\CloudEvents\DummyEvent;
+use Tests\Stegeman\Messenger\Unit\Messenger\CloudEvents\DummyEvent;
 
 class CloudEventFactoryTest extends TestCase
 {
