@@ -25,12 +25,12 @@ class CloudEventsSerializerTest extends TestCase
                     new UuidFactory()
                 ),
                 $this->createMessageRegistry(),
-                'application/json'
             ),
             new Normalizer(
                 new SdkNormalizer()
             ),
-            SerializerBuilder::create()->build()
+            SerializerBuilder::create()->build(),
+            'application/json'
         );
 
         $serializedEvent = $cloudEventsSerializer->encode(new Envelope(new DummyEvent('100', 'lalala')));

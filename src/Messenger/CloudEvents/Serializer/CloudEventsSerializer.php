@@ -13,7 +13,8 @@ class CloudEventsSerializer implements SerializerInterface
     public function __construct(
         private readonly CloudEventFactoryInterface $cloudEventFactory,
         private readonly NormalizerInterface $normalizer,
-        private readonly Serializer\SerializerInterface $serializer
+        private readonly Serializer\SerializerInterface $serializer,
+        private readonly string $format
     ) {}
 
     public function decode(array $encodedEnvelope): Envelope
@@ -24,13 +25,16 @@ class CloudEventsSerializer implements SerializerInterface
 
     public function encode(Envelope $envelope): array
     {
-        $event = $this->cloudEventFactory->buildForEnvelope($envelope);
+        $event = $this->cloudEventFactory->buildForEnvelope($envelope, $this->format);
 
         $normalizedEvent = $this->normalizer->normalize($event);
 
         return [
-            'body' => $this->serializer->serialize($normalizedEvent, 'json'),
-            'headers' => []
+            'body' => $this->serializer->serialize(
+                $normalizedEvent,
+                $this->format === 'application/json' ? 'json' : $this->format
+            ),
+            'headers' => ['Content-Type' => $this->format]
         ];
     }
 }

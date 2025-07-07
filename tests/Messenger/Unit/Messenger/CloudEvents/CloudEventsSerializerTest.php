@@ -28,7 +28,8 @@ class CloudEventsSerializerTest extends TestCase
         $serializer = new CloudEventsSerializer(
             cloudEventFactory: $this->createCloudEventFactoryWithBuildForEventCall(),
             normalizer: $this->createNormalizerWithNormalizeCall(),
-            serializer: $this->createSerializerWithSerializeCall()
+            serializer: $this->createSerializerWithSerializeCall(),
+            format: 'application/json'
         );
 
         $encodedEnvelope = $serializer->encode($envelope);
@@ -36,7 +37,7 @@ class CloudEventsSerializerTest extends TestCase
         self::assertSame(
             [
                 'body' => '{ "just-an-array": "not the responsibility of this class"}',
-                'headers' => []
+                'headers' => ['Content-Type' => 'application/json']
             ],
             $encodedEnvelope
         );

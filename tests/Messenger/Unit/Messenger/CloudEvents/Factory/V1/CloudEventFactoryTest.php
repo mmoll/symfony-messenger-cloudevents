@@ -22,7 +22,7 @@ class CloudEventFactoryTest extends TestCase
             $this->createMessageRegistryWithGetNameForEventCall()
         );
 
-        $cloudEvent = $messengerCloudEventFactory->buildForEnvelope($this->createEnvelope());
+        $cloudEvent = $messengerCloudEventFactory->buildForEnvelope($this->createEnvelope(), 'application/json');
 
         self::assertInstanceOf(CloudEventInterface::class, $cloudEvent);
     }
@@ -34,8 +34,7 @@ class CloudEventFactoryTest extends TestCase
     {
         return new CloudEventFactory(
             idGenerator: $idGenerator,
-            messageRegistry: $messageRegistry,
-            format: 'application/json'
+            messageRegistry: $messageRegistry
         );
     }
 
