@@ -3,6 +3,7 @@
 namespace Stegeman\Tests\Messenger\Unit\Messenger\CloudEvents\Factory\V1;
 
 use CloudEvents\CloudEventInterface;
+use CloudEvents\V1\CloudEvent;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -19,22 +20,27 @@ class CloudEventFactoryTest extends TestCase
     {
         $messengerCloudEventFactory = $this->getMessengerCloudEventFactory(
             $this->createIdGeneratorWithGenerateCall(),
-            $this->createMessageRegistryWithGetNameForEventCall()
+            $this->createMessageRegistryWithGetNameForEventCall(),
+            'self.defined.namespace'
         );
 
+        /** @var CloudEvent $cloudEvent */
         $cloudEvent = $messengerCloudEventFactory->buildForEnvelope($this->createEnvelope(), 'application/json');
 
         self::assertInstanceOf(CloudEventInterface::class, $cloudEvent);
+        self::assertSame('self.defined.namespace.dummy_event', $cloudEvent->getType());
     }
 
     private function getMessengerCloudEventFactory(
         IdGeneratorInterface $idGenerator,
-        MessageRegistryInterface $messageRegistry
+        MessageRegistryInterface $messageRegistry,
+        string $objectNamespace
     ): CloudEventFactory
     {
         return new CloudEventFactory(
             idGenerator: $idGenerator,
-            messageRegistry: $messageRegistry
+            messageRegistry: $messageRegistry,
+            objectNamespace: $objectNamespace
         );
     }
 

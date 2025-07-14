@@ -7,5 +7,5 @@ use Symfony\Component\Messenger\Envelope;
 
 interface CloudEventFactoryInterface
 {
-    public function buildForEnvelope(Envelope $envelope, string $format): CloudEventInterface;
+    public function buildForEnvelope(Envelope $envelope, string $dataContentType): CloudEventInterface;
 }
