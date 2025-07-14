@@ -20,27 +20,24 @@ class CloudEventFactoryTest extends TestCase
     {
         $messengerCloudEventFactory = $this->getMessengerCloudEventFactory(
             $this->createIdGeneratorWithGenerateCall(),
-            $this->createMessageRegistryWithGetNameForEventCall(),
-            'self.defined.namespace'
+            $this->createMessageRegistryWithGetNameForEventCall()
         );
 
         /** @var CloudEvent $cloudEvent */
         $cloudEvent = $messengerCloudEventFactory->buildForEnvelope($this->createEnvelope(), 'application/json');
 
         self::assertInstanceOf(CloudEventInterface::class, $cloudEvent);
-        self::assertSame('self.defined.namespace.dummy_event', $cloudEvent->getType());
+        self::assertSame('dummy_event', $cloudEvent->getType());
     }
 
     private function getMessengerCloudEventFactory(
         IdGeneratorInterface $idGenerator,
-        MessageRegistryInterface $messageRegistry,
-        string $objectNamespace
+        MessageRegistryInterface $messageRegistry
     ): CloudEventFactory
     {
         return new CloudEventFactory(
             idGenerator: $idGenerator,
-            messageRegistry: $messageRegistry,
-            objectNamespace: $objectNamespace
+            messageRegistry: $messageRegistry
         );
     }
 

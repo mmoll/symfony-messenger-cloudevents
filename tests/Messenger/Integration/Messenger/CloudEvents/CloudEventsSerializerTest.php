@@ -24,8 +24,7 @@ class CloudEventsSerializerTest extends TestCase
                 new UuidGenerator(
                     new UuidFactory()
                 ),
-                $this->createMessageRegistry(),
-                'object.namespace'
+                $this->createMessageRegistry()
             ),
             new Normalizer(
                 new SdkNormalizer()

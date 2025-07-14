@@ -13,24 +13,19 @@ class CloudEventFactory implements CloudEventFactoryInterface
 {
     public function __construct(
         private readonly IdGeneratorInterface     $idGenerator,
-        private readonly MessageRegistryInterface $messageRegistry,
-        private string $objectNamespace
+        private readonly MessageRegistryInterface $messageRegistry
     ) {}
 
     public function buildForEnvelope(Envelope $envelope, string $dataContentType): CloudEventInterface
     {
         $eventName = $this->messageRegistry->getNameForMessage($envelope->getMessage());
         $eventId = $this->idGenerator->generate($envelope->getMessage());
-        $type = sprintf(
-            '%s.%s',
-            $this->objectNamespace,
-            $eventName
-        );
+
 
         $event = new CloudEvent(
             id: $eventId,
             source: $eventName,
-            type: $type,
+            type: $eventName,
             data: $envelope->getMessage(),
             dataContentType: $dataContentType,
             time: (new \DateTimeImmutable()),
