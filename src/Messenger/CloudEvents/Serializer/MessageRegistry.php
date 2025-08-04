@@ -22,4 +22,9 @@ class MessageRegistry implements MessageRegistryInterface
     {
         $this->messageMapping[$messageName] = $messageObjectName;
     }
+
+    public function getMessageClassNameForType(string $name): string
+    {
+
+    }
 }

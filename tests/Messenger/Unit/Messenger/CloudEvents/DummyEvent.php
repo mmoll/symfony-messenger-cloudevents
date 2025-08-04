@@ -5,7 +5,7 @@ namespace Stegeman\Tests\Messenger\Unit\Messenger\CloudEvents;
 class DummyEvent
 {
     public function __construct(
-        private readonly string $id,
-        private readonly string $name
+        public readonly string $id,
+        public readonly string $name
     ) {}
 }

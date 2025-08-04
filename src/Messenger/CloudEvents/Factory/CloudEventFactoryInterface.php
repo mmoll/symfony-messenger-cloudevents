@@ -8,4 +8,6 @@ use Symfony\Component\Messenger\Envelope;
 interface CloudEventFactoryInterface
 {
     public function buildForEnvelope(Envelope $envelope, string $dataContentType): CloudEventInterface;
+
+    public function buildFromPayload(array $payload): CloudEventInterface;
 }

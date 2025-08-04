@@ -4,6 +4,7 @@ namespace Stegeman\Messenger\CloudEvents\Factory\V1;
 
 use CloudEvents\CloudEventInterface;
 use CloudEvents\V1\CloudEvent;
+use Stegeman\Messenger\CloudEvents\Normalizer\DenormalizerInterface;
 use Stegeman\Messenger\CloudEvents\Serializer\IdGeneratorInterface;
 use Stegeman\Messenger\CloudEvents\Serializer\MessageRegistryInterface;
 use Symfony\Component\Messenger\Envelope;
@@ -13,7 +14,8 @@ class CloudEventFactory implements CloudEventFactoryInterface
 {
     public function __construct(
         private readonly IdGeneratorInterface     $idGenerator,
-        private readonly MessageRegistryInterface $messageRegistry
+        private readonly MessageRegistryInterface $messageRegistry,
+        private readonly DenormalizerInterface    $denormalizer
     ) {}
 
     public function buildForEnvelope(Envelope $envelope, string $dataContentType): CloudEventInterface
@@ -32,5 +34,10 @@ class CloudEventFactory implements CloudEventFactoryInterface
         );
 
         return $event;
+    }
+
+    public function buildFromPayload(array $payload): CloudEventInterface
+    {
+        return $this->denormalizer->denormalize($payload);
     }
 }
