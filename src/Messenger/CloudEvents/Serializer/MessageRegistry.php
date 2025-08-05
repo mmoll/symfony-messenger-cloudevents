@@ -7,15 +7,15 @@ class MessageRegistry implements MessageRegistryInterface
     /** @var array<string, string> */
     private array $messageMapping = [];
 
-    public function getNameForMessage(object $message): string
+    public function getTypeForMessageClass(string $messageClass): string
     {
         foreach ($this->messageMapping as $messageName => $messageObjectName) {
-            if ($messageObjectName === get_class($message)) {
+            if ($messageObjectName === $messageClass) {
                 return $messageName;
             }
         }
 
-        throw new NoNameFoundForMessageException(sprintf('No name found for message of type %s', get_class($message)));
+        throw new NoNameFoundForMessageException(sprintf('No name found for message of type %s', $messageClass));
     }
 
     public function addMessage(string $messageName, string $messageObjectName): void

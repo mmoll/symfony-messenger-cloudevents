@@ -16,7 +16,7 @@ class MessageRegistryTest extends TestCase
 
         $messageRegistry->addMessage('name', \stdClass::class);
 
-        self::assertSame('name', $messageRegistry->getNameForMessage(new \stdClass()));
+        self::assertSame('name', $messageRegistry->getTypeForMessageClass(new \stdClass()));
     }
 
     #[Test]
@@ -27,6 +27,6 @@ class MessageRegistryTest extends TestCase
 
         $messageRegistry = new MessageRegistry();
 
-        $messageRegistry->getNameForMessage(new \stdClass());
+        $messageRegistry->getTypeForMessageClass(new \stdClass());
     }
 }

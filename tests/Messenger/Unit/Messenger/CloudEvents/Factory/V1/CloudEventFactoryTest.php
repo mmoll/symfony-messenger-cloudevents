@@ -123,7 +123,7 @@ class CloudEventFactoryTest extends TestCase
     {
         $messageRegistry = $this->createMessageRegistryInterface();
         $messageRegistry->expects($this->once())
-            ->method('getNameForMessage')
+            ->method('getTypeForMessageClass')
             ->with($this->isInstanceOf(DummyEvent::class))
             ->willReturn('dummy_event');
 

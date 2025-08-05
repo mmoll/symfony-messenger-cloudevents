@@ -2,41 +2,35 @@
 
 namespace Stegeman\Messenger\CloudEvents\Serializer;
 
-use CloudEvents\V1\CloudEvent;
-use Stegeman\Messenger\CloudEvents\Factory\CloudEventToMessageConverterInterface;
+use Stegeman\Messenger\CloudEvents\Converter\V1\EnvelopeConverter;
 use Stegeman\Messenger\CloudEvents\Normalizer\DenormalizerInterface;
 use Stegeman\Messenger\CloudEvents\Normalizer\NormalizerInterface;
 use Symfony\Component\Messenger\Envelope;
-use Stegeman\Messenger\CloudEvents\Factory\CloudEventFactoryInterface;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use JMS\Serializer;
 
-class CloudEventsSerializer implements SerializerInterface
+readonly class CloudEventsSerializer implements SerializerInterface
 {
     public function __construct(
-        private readonly CloudEventToMessageConverterInterface $cloudEventToMessageConverter,
-        private readonly CloudEventFactoryInterface $cloudEventFactory,
-        private readonly NormalizerInterface $normalizer,
-        private readonly DenormalizerInterface $denormalizer,
-        private readonly Serializer\SerializerInterface $serializer,
-        private readonly string $format
+        private EnvelopeConverter $envelopeConverter,
+        private NormalizerInterface $normalizer,
+        private DenormalizerInterface $denormalizer,
+        private Serializer\SerializerInterface $serializer,
+        private string $format
     ) {}
 
-    public function decode(array $encodedEnvelope): Envelope
+    public function decode(array $encodedCloudEvent): Envelope
     {
-        /** @var CloudEvent $cloudEvent */
-        $cloudEvent = $this->denormalizer->denormalize($encodedEnvelope);
+        $cloudEvent = $this->denormalizer->denormalize($encodedCloudEvent);
 
-        $message = $this->cloudEventToMessageConverter->convert($cloudEvent);
-
-        return new Envelope($message);
+        return $this->envelopeConverter->fromCloudEvent($cloudEvent);
     }
 
     public function encode(Envelope $envelope): array
     {
-        $event = $this->cloudEventFactory->buildForEnvelope($envelope, $this->format);
+        $cloudEvent = $this->envelopeConverter->toCloudEvent($envelope);
 
-        $normalizedEvent = $this->normalizer->normalize($event);
+        $normalizedEvent = $this->normalizer->normalize($cloudEvent);
 
         return [
             'body' => $this->serializer->serialize(

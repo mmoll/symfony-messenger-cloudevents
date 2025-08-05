@@ -3,11 +3,13 @@
 namespace Stegeman\Tests\Messenger\Unit\Messenger\CloudEvents\Normalizer\V1;
 
 use CloudEvents\V1\CloudEventInterface;
+use JMS\Serializer\SerializerInterface;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Stegeman\Messenger\CloudEvents\Normalizer\V1\Denormalizer;
 use CloudEvents\Serializers\Normalizers\V1\DenormalizerInterface;
+use Stegeman\Messenger\CloudEvents\Serializer\MessageRegistryInterface;
 use Stegeman\Tests\Messenger\Unit\Messenger\CloudEvents\DummyEvent;
 
 class DenormalizerTest extends TestCase
@@ -15,15 +17,23 @@ class DenormalizerTest extends TestCase
     #[Test]
     public function  anArrayIsDenormalizedToCloudEvent(): void
     {
-        $input = [ 'body' => '{"id": "100", "name": "foobar"}'];
+        $body = '{"id": "100", "name": "foobar"}';
+        $targetClass = DummyEvent::class;
+        $message = new DummyEvent('100', 'foobar');
+        $input = [ 'body' => $body];
+        $denormalizerInput = ['body' => $message];
 
         $denormalizer = new Denormalizer(
-            $this->createDenormalizerWithDenormalizeCall($input, new DummyEvent("100", "foobar"))
+            $this->createMessageRegistry('dummy-event', $targetClass),
+            $this->createSerializerWithDeserializeCall($body, $targetClass, $message),
+            $this->createDenormalizerWithDenormalizeCall($denormalizerInput, $message)
         );
 
-        $cloudEvent = $denormalizer->denormalize($input); // Input is not important. The real lifting is done by the
+        $cloudEvent = $denormalizer->denormalize($input);
 
         self::assertInstanceOf(CloudEventInterface::class, $cloudEvent);
+        self::assertInstanceOf(DummyEvent::class, $cloudEvent->getData());
+        self::assertSame('dummy-event', $cloudEvent->getType());
     }
 
     private function createDenormalizerWithDenormalizeCall(array $denormalizeInput, object $denormalizeResult): DenormalizerInterface
@@ -52,5 +62,39 @@ class DenormalizerTest extends TestCase
             ->willReturn($data);
 
         return $cloudEvent;
+    }
+
+    private function createSerializerWithDeserializeCall(string $data, string $type, object $result): SerializerInterface
+    {
+        $serializer = $this->createSerializerInterface();
+
+        $serializer->expects($this->once())
+            ->method('deserialize')
+            ->with($data, $type, 'json')
+            ->willReturn($result);
+
+        return $serializer;
+    }
+
+    private function createSerializerInterface(): SerializerInterface&MockObject
+    {
+        return $this->createMock(SerializerInterface::class);
+    }
+
+    private function createMessageRegistry(string $type, string $messageClassName): MessageRegistryInterface
+    {
+        $messageRegistry = $this->createMock(MessageRegistryInterface::class);
+
+        $messageRegistry->expects($this->any())
+            ->method('getTypeForMessageClass')
+            ->with($messageClassName)
+            ->willReturn($type);
+
+        $messageRegistry->expects($this->any())
+            ->method('getMessageClassNameForType')
+            ->with($type)
+            ->willReturn($messageClassName);
+
+        return $messageRegistry;
     }
 }

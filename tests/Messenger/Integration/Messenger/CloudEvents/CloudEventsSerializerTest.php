@@ -8,6 +8,7 @@ use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\UuidFactory;
+use Stegeman\Messenger\CloudEvents\Converter\V1\EnvelopeConverter;
 use Stegeman\Messenger\CloudEvents\Factory\CloudEventToMessageConverter;
 use Stegeman\Messenger\CloudEvents\Factory\V1\CloudEventFactory;
 use Stegeman\Messenger\CloudEvents\Normalizer\DenormalizerInterface;
@@ -24,18 +25,11 @@ class CloudEventsSerializerTest extends TestCase
     public function aCloudEventIsEncoded(): void
     {
         $cloudEventsSerializer = new CloudEventsSerializer(
-            new CloudEventToMessageConverter(
+            new EnvelopeConverter(
                 $this->createMessageRegistry(),
-                SerializerBuilder::create()->build()
-            ),
-            new CloudEventFactory(
                 new UuidGenerator(
                     new UuidFactory()
-                ),
-                $this->createMessageRegistry(),
-                new Denormalizer(
-                    new SdkDenormalizer()
-                ),
+                )
             ),
             new Normalizer(
                 new SdkNormalizer()
@@ -56,16 +50,11 @@ class CloudEventsSerializerTest extends TestCase
     public function aCloudEventIsDecoded(): void
     {
         $cloudEventSerializer = new CloudEventsSerializer(
-            new CloudEventToMessageConverter(
+            new EnvelopeConverter(
                 $this->createMessageRegistry(),
-                SerializerBuilder::create()->build()
-            ),
-            new CloudEventFactory(
                 new UuidGenerator(
                     new UuidFactory()
-                ),
-                $this->createMessageRegistry(),
-                $this->createDenormalizerInterface()
+                )
             ),
             new Normalizer(
                 new SdkNormalizer()
@@ -102,7 +91,7 @@ class CloudEventsSerializerTest extends TestCase
     {
         return new class () implements MessageRegistryInterface {
 
-            public function getNameForMessage(object $message): string
+            public function getTypeForMessageClass(string $messageClass): string
             {
                 return 'nl.stegeman.dummy-message';
             }
@@ -112,10 +101,5 @@ class CloudEventsSerializerTest extends TestCase
                 return DummyEvent::class;
             }
         };
-    }
-
-    private function createDenormalizerInterface(): DenormalizerInterface
-    {
-        return $this->createMock(DenormalizerInterface::class);
     }
 }

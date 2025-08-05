@@ -34,7 +34,7 @@ class CloudEventToMessageConverterTest extends TestCase
 
         /** @var DummyEvent $message */
         $message = $cloudEventToMessageConverter->convert(
-            $this->createV1CloudEventWithDataAndTypeAndContentType($data, $type, 'application/json')
+            $this->createV1CloudEventWithDataAndTypeAndContentType($data, $type)
         );
 
         self::assertInstanceOf(DummyEvent::class, $message);
@@ -53,7 +53,7 @@ class CloudEventToMessageConverterTest extends TestCase
         );
     }
 
-    private function createV1CloudEventWithDataAndTypeAndContentType(array $data, string $type, string $contentType): CloudEventInterface
+    private function createV1CloudEventWithDataAndTypeAndContentType(array $data, string $type): CloudEventInterface
     {
         $cloudEvent = $this->createV1CloudEventInterface();
 
@@ -64,10 +64,6 @@ class CloudEventToMessageConverterTest extends TestCase
         $cloudEvent->expects($this->any())
             ->method('getType')
             ->willReturn($type);
-
-        $cloudEvent->expects($this->any())
-            ->method('getDataContentType')
-            ->willReturn($contentType);
 
         return $cloudEvent;
     }
