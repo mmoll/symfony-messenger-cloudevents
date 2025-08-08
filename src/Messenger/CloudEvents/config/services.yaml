@@ -1,0 +1,41 @@
+services:
+  Stegeman\Messenger\CloudEvents\Serializer\CloudEventsSerializer:
+    arguments:
+      $format: 'application/json'
+
+  Stegeman\Messenger\CloudEvents\Factory\V1\CloudEventFactory:
+
+  Stegeman\Messenger\CloudEvents\Factory\CloudEventFactoryInterface: '@Stegeman\Messenger\CloudEvents\Factory\V1\CloudEventFactory'
+
+  Stegeman\Messenger\CloudEvents\Normalizer\V1\Normalizer:
+
+  Ramsey\Uuid\UuidFactory:
+  Ramsey\Uuid\UuidFactoryInterface: '@Ramsey\Uuid\UuidFactory'
+  Stegeman\Messenger\CloudEvents\Serializer\UuidGenerator:
+  Stegeman\Messenger\CloudEvents\Serializer\IdGeneratorInterface: '@Stegeman\Messenger\CloudEvents\Serializer\UuidGenerator'
+
+  Stegeman\Messenger\CloudEvents\Normalizer\NormalizerInterface: '@Stegeman\Messenger\CloudEvents\Normalizer\V1\Normalizer'
+
+
+  Stegeman\Messenger\CloudEvents\Serializer\MessageRegistry:
+    calls:
+      - method: 'addMessage'
+        arguments: [ 'event.test-event', 'App\Domain\Event\TestEvent' ]
+
+  Stegeman\Messenger\CloudEvents\Serializer\MessageRegistryInterface: '@Stegeman\Messenger\CloudEvents\Serializer\MessageRegistry'
+  JMS\Serializer\Serializer:
+
+  Stegeman\Messenger\CloudEvents\Converter\V1\EnvelopeConverter:
+    arguments:
+      - '@Stegeman\Messenger\CloudEvents\Serializer\MessageRegistryInterface'
+      - '@Stegeman\Messenger\CloudEvents\Serializer\IdGeneratorInterface'
+  Stegeman\Messenger\CloudEvents\Converter\EnvelopeConverterInterface: '@Stegeman\Messenger\CloudEvents\Converter\V1\EnvelopeConverter'
+
+  CloudEvents\Serializers\Normalizers\V1\Denormalizer:
+  CloudEvents\Serializers\Normalizers\V1\DenormalizerInterface: '@CloudEvents\Serializers\Normalizers\V1\Denormalizer'
+
+  Stegeman\Messenger\CloudEvents\Normalizer\V1\Denormalizer:
+  Stegeman\Messenger\CloudEvents\Normalizer\DenormalizerInterface: '@Stegeman\Messenger\CloudEvents\Normalizer\V1\Denormalizer'
+
+  CloudEvents\Serializers\Normalizers\V1\Normalizer:
+  CloudEvents\Serializers\Normalizers\V1\NormalizerInterface: '@CloudEvents\Serializers\Normalizers\V1\Normalizer'
