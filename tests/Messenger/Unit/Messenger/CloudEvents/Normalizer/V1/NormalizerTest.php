@@ -4,6 +4,7 @@ namespace Stegeman\Tests\Messenger\Unit\Messenger\CloudEvents\Normalizer\V1;
 
 use CloudEvents\Serializers\Normalizers\V1\NormalizerInterface;
 use CloudEvents\V1\CloudEventInterface;
+use JMS\Serializer\SerializerInterface;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -14,18 +15,30 @@ class NormalizerTest extends TestCase
     #[Test]
     public function cloudEventIsNormalizedToArray(): void
     {
+        $normalizerInput = $this->createCloudEventWithData();
+
+        $normalizerOutput =  [
+            'type' => 'message-name',
+            'data' => '{"id": 12345}'
+        ];
+
         $normalizer = $this->getNormalizer(
-            $this->createNormalizerWithNormalizeCall()
+            $this->createNormalizerWithNormalizeCall($normalizerInput, $normalizerOutput),
+//            $this->createSerializerWithSerializeCall($normalizerOutput)
         );
 
         $result = $normalizer->normalize($this->createCloudEventWithData());
 
-
-        self::assertIsArray($result);
+        self::assertTrue(is_array($result));
         self::assertSame(
             [
-                'type' => 'message-name',
-                'body' => '{"id": 12345}'
+                'body' => [
+                    "type" => "message-name",
+                    "data" => "{\"id\": 12345}"
+                ],
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ]
             ],
             $result
         );
@@ -44,6 +57,10 @@ class NormalizerTest extends TestCase
             ->method('getId')
             ->willReturn('12345');
 
+        $cloudEvent->expects($this->any())
+            ->method('getDataContentType')
+            ->willReturn('application/json');
+
         return $cloudEvent;
     }
 
@@ -52,16 +69,14 @@ class NormalizerTest extends TestCase
         return $this->createMock(CloudEventInterface::class);
     }
 
-    private function createNormalizerWithNormalizeCall(): NormalizerInterface
+    private function createNormalizerWithNormalizeCall(CloudEventInterface $normalizerInput, array $response): NormalizerInterface
     {
         $normalizer = $this->createSdkNormalizerInterface();
 
         $normalizer->expects($this->once())
             ->method('normalize')
-            ->willReturn([
-                'type' => 'message-name',
-                'body' => '{"id": 12345}'
-            ]);
+            ->with($normalizerInput)
+            ->willReturn($response);
 
         return $normalizer;
     }
@@ -69,5 +84,26 @@ class NormalizerTest extends TestCase
     private function createSdkNormalizerInterface(): NormalizerInterface&MockObject
     {
         return $this->createMock(NormalizerInterface::class);
+    }
+
+    public function createSerializerWithSerializeCall(array $serializerInput): SerializerInterface
+    {
+        $serializer = $this->createSerializerInterface();
+
+        $serializer->expects($this->once())
+            ->method('serialize')
+            ->with(
+                $serializerInput,
+                'json',
+                null
+            )
+            ->willReturn(json_encode($serializerInput));
+
+        return $serializer;
+    }
+
+    private function createSerializerInterface(): SerializerInterface&MockObject
+    {
+        return $this->createMock(SerializerInterface::class);
     }
 }

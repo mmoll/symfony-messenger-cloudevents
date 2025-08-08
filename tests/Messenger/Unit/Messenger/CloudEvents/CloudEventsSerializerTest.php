@@ -5,7 +5,6 @@ namespace Stegeman\Tests\Messenger\Unit\Messenger\CloudEvents;
 use CloudEvents\CloudEventInterface;
 use CloudEvents\V1\CloudEventTrait;
 use DateTimeImmutable;
-use JMS\Serializer\SerializerInterface;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -29,16 +28,14 @@ class CloudEventsSerializerTest extends TestCase
         $serializer = new CloudEventsSerializer(
             $this->createEnvelopeConverterInterface(),
             normalizer: $this->createNormalizerWithNormalizeCall(),
-            denormalizer: $this->createDenormalizerInterface(),
-            serializer: $this->createSerializerWithSerializeCall(),
-            format: 'application/json'
+            denormalizer: $this->createDenormalizerInterface()
         );
 
         $encodedEnvelope = $serializer->encode($envelope);
 
         self::assertSame(
             [
-                'body' => '{ "just-an-array": "not the responsibility of this class"}',
+                'body' => '{"just-an-array":"not the responsibility of this class"}',
                 'headers' => ['Content-Type' => 'application/json']
             ],
             $encodedEnvelope
@@ -51,9 +48,7 @@ class CloudEventsSerializerTest extends TestCase
         $serializer = new CloudEventsSerializer(
             $this->createEnvelopeConverterWithFromCloudEventCall(new Envelope(new DummyEvent('1', 'name'))),
             normalizer: $this->createNormalizerInterface(),
-            denormalizer: $this->createDenormalizerWithDenormalizeCall(),
-            serializer: $this->createSerializerInterface(),
-            format: 'application/json'
+            denormalizer: $this->createDenormalizerWithDenormalizeCall()
         );
 
         $envelope = $serializer->decode(
@@ -87,7 +82,7 @@ class CloudEventsSerializerTest extends TestCase
         $normalizer->expects($this->once())
             ->method('normalize')
             ->with($this->isInstanceOf(CloudEventInterface::class))
-            ->willReturn(['just-an-array' => 'not the responsibility of this class']);
+            ->willReturn(['body' => '{"just-an-array":"not the responsibility of this class"}', 'headers' => ['Content-Type' => 'application/json']]);
 
         return $normalizer;
     }
@@ -117,22 +112,6 @@ class CloudEventsSerializerTest extends TestCase
     private function createDenormalizerInterface(): DenormalizerInterface&MockObject
     {
         return $this->createMock(DenormalizerInterface::class);
-    }
-
-    private function createSerializerWithSerializeCall(): SerializerInterface
-    {
-        $serializer = $this->createSerializerInterface();
-
-        $serializer->expects($this->once())
-            ->method('serialize')
-            ->willReturn('{ "just-an-array": "not the responsibility of this class"}');
-
-        return $serializer;
-    }
-
-    private function createSerializerInterface(): SerializerInterface&MockObject
-    {
-        return $this->createMock(SerializerInterface::class);
     }
 
     private function createEnvelopeConverterWithFromCloudEventCall(Envelope $fromCloudEventResult): EnvelopeConverterInterface

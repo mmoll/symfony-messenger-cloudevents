@@ -4,6 +4,7 @@ namespace Stegeman\Tests\Messenger\Integration\Messenger\CloudEvents\Normalizer;
 
 use CloudEvents\Serializers\Normalizers\V1\Normalizer as SdkNormalizer;
 use CloudEvents\V1\CloudEvent;
+use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Stegeman\Messenger\CloudEvents\Normalizer\V1\Normalizer;
@@ -31,17 +32,22 @@ class NormalizerTest extends TestCase
         );
 
         self::assertEquals(
-            array(
-                "specversion"=> "1.0",
-                "id"=> "100",
-                "source"=> "name-of-producer",
-                "type"=>  "nl.stegeman.dummy-event-name",
-                "datacontenttype"=>  "application/json",
-                "dataschema"=>  "v1.0",
-                "subject"=> "subject",
-                "time"=> $time->format('Y-m-d\TH:i:s\Z'),
-                "data"=> new DummyEvent('dummy-event-id', 'dummy-event-name'),
-            ),
+            [
+                'body' => [
+                    "specversion"=> "1.0",
+                    "id"=> "100",
+                    "source"=> "name-of-producer",
+                    "type"=>  "nl.stegeman.dummy-event-name",
+                    "datacontenttype"=>  "application/json",
+                    "dataschema"=>  "v1.0",
+                    "subject"=> "subject",
+                    "time"=> $time->format('Y-m-d\TH:i:s\Z'),
+                    "data"=> new DummyEvent('dummy-event-id', 'dummy-event-name'),
+                ],
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ]
+            ],
             $result
         );
     }
@@ -49,7 +55,8 @@ class NormalizerTest extends TestCase
     private function getNormalizer(): Normalizer
     {
         return new Normalizer(
-            new SdkNormalizer()
+            new SdkNormalizer(),
+            SerializerBuilder::create()->build()
         );
     }
 }

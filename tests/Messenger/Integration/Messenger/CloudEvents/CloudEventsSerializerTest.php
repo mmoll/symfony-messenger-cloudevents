@@ -32,20 +32,21 @@ class CloudEventsSerializerTest extends TestCase
                 )
             ),
             new Normalizer(
-                new SdkNormalizer()
+                new SdkNormalizer(),
+                SerializerBuilder::create()->build(),
             ),
             new Denormalizer(
                 $this->createMessageRegistry(),
                 SerializerBuilder::create()->build(),
                 new SdkDenormalizer()
-            ),
-            SerializerBuilder::create()->build(),
-            'application/json'
+            )
         );
 
         $serializedEvent = $cloudEventsSerializer->encode(new Envelope(new DummyEvent('100', 'lalala')));
 
-        self::assertTrue((bool) json_decode($serializedEvent['body']));
+        foreach(['specversion', 'id', 'source', 'type', 'datacontenttype', 'data'] as $key) {
+            self::assertArrayHasKey($key, $serializedEvent['body']);
+        }
     }
 
     #[Test]
@@ -59,28 +60,30 @@ class CloudEventsSerializerTest extends TestCase
                 )
             ),
             new Normalizer(
-                new SdkNormalizer()
+                new SdkNormalizer(),
+                SerializerBuilder::create()->build()
             ),
             new Denormalizer(
                 $this->createMessageRegistry(),
                 SerializerBuilder::create()->build(),
                 new SdkDenormalizer(),
-            ),
-            SerializerBuilder::create()->build(),
-            'application/json'
+            )
         );
 
         $input = [
-            'specversion' => '1.0',
-            'id' => 'd4576019-8919-42c6-ba46-4f82fcbfc94d',
-            'source' => 'nl.stegeman.dummy-message',
-            'type' => 'nl.stegeman.dummy-message',
-            'datacontenttype' => 'application/json',
-            'time' => '2025-07-14T13:07:00Z',
-            'data' => [
-                'id' => '100',
-                'name' => 'lalala',
+            'body' => [
+                'specversion' => '1.0',
+                'id' => 'd4576019-8919-42c6-ba46-4f82fcbfc94d',
+                'source' => 'nl.stegeman.dummy-message',
+                'type' => 'nl.stegeman.dummy-message',
+                'datacontenttype' => 'application/json',
+                'time' => '2025-07-14T13:07:00Z',
+                'data' => '{"id": 100, "name":"lalala"}'
             ],
+            'headers' => [
+                'Content-Type' => 'application/json'
+            ]
+
         ];
 
         $envelope = $cloudEventSerializer->decode($input);

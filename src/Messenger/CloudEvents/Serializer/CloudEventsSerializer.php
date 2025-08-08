@@ -2,6 +2,7 @@
 
 namespace Stegeman\Messenger\CloudEvents\Serializer;
 
+use CloudEvents\V1\CloudEventInterface;
 use Stegeman\Messenger\CloudEvents\Converter\EnvelopeConverterInterface;
 use Stegeman\Messenger\CloudEvents\Normalizer\DenormalizerInterface;
 use Stegeman\Messenger\CloudEvents\Normalizer\NormalizerInterface;
@@ -14,9 +15,7 @@ readonly class CloudEventsSerializer implements SerializerInterface
     public function __construct(
         private EnvelopeConverterInterface $envelopeConverter,
         private NormalizerInterface $normalizer,
-        private DenormalizerInterface $denormalizer,
-        private Serializer\SerializerInterface $serializer,
-        private string $format
+        private DenormalizerInterface $denormalizer
     ) {}
 
     public function decode(array $encodedCloudEvent): Envelope
@@ -28,16 +27,9 @@ readonly class CloudEventsSerializer implements SerializerInterface
 
     public function encode(Envelope $envelope): array
     {
+        /** @var CloudEventInterface $cloudEvent */
         $cloudEvent = $this->envelopeConverter->toCloudEvent($envelope);
 
-        $normalizedEvent = $this->normalizer->normalize($cloudEvent);
-
-        return [
-            'body' => $this->serializer->serialize(
-                $normalizedEvent,
-                $this->format === 'application/json' ? 'json' : $this->format
-            ),
-            'headers' => ['Content-Type' => $this->format]
-        ];
+        return $this->normalizer->normalize($cloudEvent);
     }
 }

@@ -4,8 +4,6 @@ services:
     autoconfigure: true
 
   Stegeman\Messenger\CloudEvents\Serializer\CloudEventsSerializer:
-    arguments:
-      $format: 'application/json'
 
   Stegeman\Messenger\CloudEvents\Factory\V1\CloudEventFactory:
 
