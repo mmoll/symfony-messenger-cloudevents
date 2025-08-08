@@ -1,4 +1,8 @@
 services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
   Stegeman\Messenger\CloudEvents\Serializer\CloudEventsSerializer:
     arguments:
       $format: 'application/json'
