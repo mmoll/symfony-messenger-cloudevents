@@ -24,7 +24,7 @@ class NormalizerTest extends TestCase
 
         $normalizer = $this->getNormalizer(
             $this->createNormalizerWithNormalizeCall($normalizerInput, $normalizerOutput),
-//            $this->createSerializerWithSerializeCall($normalizerOutput)
+            $this->createSerializerWithSerializeCall($normalizerOutput)
         );
 
         $result = $normalizer->normalize($this->createCloudEventWithData());
@@ -32,10 +32,7 @@ class NormalizerTest extends TestCase
         self::assertTrue(is_array($result));
         self::assertSame(
             [
-                'body' => [
-                    "type" => "message-name",
-                    "data" => "{\"id\": 12345}"
-                ],
+                'body' => '{"type":"message-name","data":"{\"id\": 12345}"}',
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ]
@@ -44,9 +41,9 @@ class NormalizerTest extends TestCase
         );
     }
 
-    private function getNormalizer(NormalizerInterface $normalizer): Normalizer
+    private function getNormalizer(NormalizerInterface $normalizer, SerializerInterface $serializer): Normalizer
     {
-        return new Normalizer($normalizer);
+        return new Normalizer($normalizer, $serializer);
     }
 
     private function createCloudEventWithData(): CloudEventInterface

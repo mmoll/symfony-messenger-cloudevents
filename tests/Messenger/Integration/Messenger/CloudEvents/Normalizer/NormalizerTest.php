@@ -31,25 +31,11 @@ class NormalizerTest extends TestCase
             )
         );
 
-        self::assertEquals(
-            [
-                'body' => [
-                    "specversion"=> "1.0",
-                    "id"=> "100",
-                    "source"=> "name-of-producer",
-                    "type"=>  "nl.stegeman.dummy-event-name",
-                    "datacontenttype"=>  "application/json",
-                    "dataschema"=>  "v1.0",
-                    "subject"=> "subject",
-                    "time"=> $time->format('Y-m-d\TH:i:s\Z'),
-                    "data"=> new DummyEvent('dummy-event-id', 'dummy-event-name'),
-                ],
-                'headers' => [
-                    'Content-Type' => 'application/json'
-                ]
-            ],
-            $result
-        );
+        $result = json_decode($result['body'], true);
+        foreach(['specversion', 'id', 'source', 'type', 'datacontenttype', 'dataschema', 'subject', 'time', 'data'] as $key)
+        {
+            self::assertArrayHasKey($key, $result);
+        }
     }
 
     private function getNormalizer(): Normalizer

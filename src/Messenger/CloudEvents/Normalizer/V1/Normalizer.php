@@ -10,15 +10,18 @@ use Stegeman\Messenger\CloudEvents\Normalizer\NormalizerInterface;
 readonly class Normalizer implements NormalizerInterface
 {
     public function __construct(
-        private SdkNormalizerInterface $normalizer
+        private SdkNormalizerInterface $normalizer,
+        private SerializerInterface $serializer
     ) {}
 
     public function normalize(CloudEventInterface $cloudEvent): array
     {
         $normalizedEvent = $this->normalizer->normalize($cloudEvent, true);
 
+        $serializedNormalizedEvent = $this->serializer->serialize($normalizedEvent, 'json');
+
         return  [
-            'body' => $normalizedEvent,
+            'body' => $serializedNormalizedEvent,
             'headers' => ['Content-Type' => $cloudEvent->getDataContentType()]
         ];
     }
