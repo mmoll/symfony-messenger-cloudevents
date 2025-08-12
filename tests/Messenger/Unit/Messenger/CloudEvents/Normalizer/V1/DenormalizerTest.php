@@ -17,68 +17,87 @@ class DenormalizerTest extends TestCase
     #[Test]
     public function anArrayIsDenormalizedToCloudEvent(): void
     {
-        $data = [
-            'type' => 'dummy-event',
-            'data' => json_encode(
-                [
-                    'id' => '100',
-                    'name' => 'foobar'
-                ]
-            )
-        ];
-        $targetClass = DummyEvent::class;
-        $message = new DummyEvent('100', 'foobar');
-        $denormalizerInput = $data;
-        $denormalizerInput['data'] = $message;
+        $messageType = 'event.test-event';
+        $messageData = json_encode(['id' => '100', 'name' => 'foobar']);
+        $expectedMessageType = DummyEvent::class;
 
-        $denormalizer = new Denormalizer(
-            $this->createMessageRegistry('dummy-event', $targetClass),
-            $this->createSerializerWithDeserializeCall($data['data'], $targetClass, $message),
-            $this->createDenormalizerWithDenormalizeCall($denormalizerInput, $message)
+        $input = [
+            'body' => sprintf(
+                '{
+                    "specversion": "1.0",
+                    "id": "82c6e8b2-8f53-44e1-a083-9da4d20e3fcb",
+                    "source": "event.test-event",
+                    "type": "%s",
+                    "datacontenttype": "application/json",
+                    "data": %s
+                }',
+                $messageType,
+                $messageData
+            ),
+            'headers' => [
+                'Content-Type' => 'application/json'
+            ]
+        ];
+
+        $sdkDenormalizerInput = [
+            'specversion' => '1.0',
+            'id' => '82c6e8b2-8f53-44e1-a083-9da4d20e3fcb',
+            'source' => 'event.test-event',
+            'type' => 'event.test-event',
+            'datacontenttype' => 'application/json',
+            'data' => new DummyEvent('100', 'foobar')
+        ];
+
+        $denormalizer = $this->getDenormalizer(
+            $this->createMessageRegistryWithGetMessageClassNameForTypeCall($messageType, $expectedMessageType),
+            $this->createSerializerWithDeserializeCall($messageData, new $expectedMessageType("100", "foobar")),
+            $this->createDenormalizerWithDenormalizeCall($sdkDenormalizerInput)
         );
 
-        $cloudEvent = $denormalizer->denormalize(['body' => $data]);
+        /** @var CloudEventInterface $cloudEvent */
+        $cloudEvent = $denormalizer->denormalize($input);
 
         self::assertInstanceOf(CloudEventInterface::class, $cloudEvent);
-        self::assertInstanceOf(DummyEvent::class, $cloudEvent->getData());
     }
 
-    private function createDenormalizerWithDenormalizeCall(array $denormalizeInput, object $denormalizeResult): DenormalizerInterface
+    private function getDenormalizer(
+        MessageRegistryInterface $messageRegistry,
+        SerializerInterface $serializer,
+        DenormalizerInterface $denormalizer
+    ): Denormalizer
     {
-        $denormalizer = $this->createSdkDenormalizerInterface();
-
-        $denormalizer->expects($this->once())
-            ->method('denormalize')
-            ->with($denormalizeInput)
-            ->willReturn($this->createCloudEventWithData($denormalizeResult));
-
-        return $denormalizer;
+        return new Denormalizer(
+            $messageRegistry,
+            $serializer,
+            $denormalizer
+        );
     }
 
-    private function createSdkDenormalizerInterface(): DenormalizerInterface&MockObject
+    private function createMessageRegistryWithGetMessageClassNameForTypeCall(string $type, string $messageClassName): MessageRegistryInterface
     {
-        return $this->createMock(DenormalizerInterface::class);
+        $messageRegistry = $this->createMessageRegistryInterface();
+
+        $messageRegistry->expects($this->once())
+            ->method('getMessageClassNameForType')
+            ->with($type)
+            ->willReturn($messageClassName);
+
+        return $messageRegistry;
     }
 
-    private function createCloudEventWithData(object $data): CloudEventInterface
+    private function createMessageRegistryInterface(): MessageRegistryInterface&MockObject
     {
-        $cloudEvent = $this->createMock(CloudEventInterface::class);
-
-        $cloudEvent->expects($this->any())
-            ->method('getData')
-            ->willReturn($data);
-
-        return $cloudEvent;
+        return $this->createMock(MessageRegistryInterface::class);
     }
 
-    private function createSerializerWithDeserializeCall(string $data, string $type, object $result): SerializerInterface
+    private function createSerializerWithDeserializeCall(string $messageData, object $deserializeResult): SerializerInterface
     {
         $serializer = $this->createSerializerInterface();
 
         $serializer->expects($this->once())
             ->method('deserialize')
-            ->with($data, $type, 'json')
-            ->willReturn($result);
+            ->with($messageData)
+            ->willReturn($deserializeResult);
 
         return $serializer;
     }
@@ -88,20 +107,21 @@ class DenormalizerTest extends TestCase
         return $this->createMock(SerializerInterface::class);
     }
 
-    private function createMessageRegistry(string $type, string $messageClassName): MessageRegistryInterface
+    private function createDenormalizerWithDenormalizeCall(array $denormalizeInput): DenormalizerInterface
     {
-        $messageRegistry = $this->createMock(MessageRegistryInterface::class);
+        $denormalizer = $this->createDenormalizerInterface();
 
-        $messageRegistry->expects($this->any())
-            ->method('getTypeForMessageClass')
-            ->with($messageClassName)
-            ->willReturn($type);
+        $denormalizer->expects($this->once())
+            ->method('denormalize')
+            ->with($denormalizeInput);
 
-        $messageRegistry->expects($this->any())
-            ->method('getMessageClassNameForType')
-            ->with($type)
-            ->willReturn($messageClassName);
-
-        return $messageRegistry;
+        return $denormalizer;
     }
+
+    private function createDenormalizerInterface(): DenormalizerInterface&MockObject
+    {
+        return $this->createMock(DenormalizerInterface::class);
+    }
+
+
 }

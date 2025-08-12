@@ -69,19 +69,18 @@ class CloudEventsSerializerTest extends TestCase
         );
 
         $input = [
-            'body' => [
+            'body' => json_encode([
                 'specversion' => '1.0',
                 'id' => 'd4576019-8919-42c6-ba46-4f82fcbfc94d',
                 'source' => 'nl.stegeman.dummy-message',
                 'type' => 'nl.stegeman.dummy-message',
                 'datacontenttype' => 'application/json',
                 'time' => '2025-07-14T13:07:00Z',
-                'data' => '{"id": 100, "name":"lalala"}'
-            ],
+                'data' => ['id' => '100', 'name' => 'lalala']
+            ]),
             'headers' => [
                 'Content-Type' => 'application/json'
             ]
-
         ];
 
         $envelope = $cloudEventSerializer->decode($input);

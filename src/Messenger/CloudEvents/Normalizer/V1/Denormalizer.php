@@ -19,16 +19,17 @@ readonly class Denormalizer implements DenormalizerInterface
     public function denormalize(array $normalizedEvent): CloudEventInterface
     {
         $normalizedEventBody = $normalizedEvent['body'];
-        $body = json_decode($normalizedEventBody['data'], true);
+
+        $body = json_decode($normalizedEventBody, true);
 
         $message = $this->serializer->deserialize(
-            json_encode($body),
-            $this->messageRegistry->getMessageClassNameForType($normalizedEventBody['type']),
+            json_encode($body['data']),
+            $this->messageRegistry->getMessageClassNameForType($body['type']),
             'json'
         );
 
-        $normalizedEventBody['data'] = $message;
+        $body['data'] = $message;
 
-        return $this->sdkDenormalizer->denormalize($normalizedEventBody);
+        return $this->sdkDenormalizer->denormalize($body);
     }
 }
