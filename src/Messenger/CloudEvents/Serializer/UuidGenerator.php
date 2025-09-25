@@ -2,16 +2,22 @@
 
 namespace Stegeman\Messenger\CloudEvents\Serializer;
 
-use Ramsey\Uuid\UuidFactoryInterface;
 use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Uid\Factory\RandomBasedUuidFactory;
+use Symfony\Component\Uid\UuidV4;
 
 readonly class UuidGenerator implements IdGeneratorInterface
+
 {
-    public function __construct(private UuidFactoryInterface $uuidFactory) {}
+    private RandomBasedUuidFactory $uuidFactory;
+
+    public function __construct(?RandomBasedUuidFactory $uuidFactory)  {
+        $this->uuidFactory = $uuidFactory ?? new RandomBasedUuidFactory(UuidV4::class);
+    }
 
 
     public function generate(Envelope $envelope): string
     {
-        return $this->uuidFactory->uuid4()->toString();
+        return $this->uuidFactory->create()->toString();
     }
 }

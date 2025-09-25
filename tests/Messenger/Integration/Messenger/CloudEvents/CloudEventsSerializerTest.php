@@ -7,17 +7,17 @@ use CloudEvents\Serializers\Normalizers\V1\Normalizer as SdkNormalizer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\UuidFactory;
 use Stegeman\Messenger\CloudEvents\Converter\V1\EnvelopeConverter;
 use Stegeman\Messenger\CloudEvents\Factory\CloudEventToMessageConverter;
 use Stegeman\Messenger\CloudEvents\Factory\V1\CloudEventFactory;
-use Stegeman\Messenger\CloudEvents\Normalizer\DenormalizerInterface;
 use Stegeman\Messenger\CloudEvents\Normalizer\V1\Denormalizer;
 use Stegeman\Messenger\CloudEvents\Normalizer\V1\Normalizer;
 use Stegeman\Messenger\CloudEvents\Serializer\CloudEventsSerializer;
 use Stegeman\Messenger\CloudEvents\Serializer\MessageRegistryInterface;
 use Stegeman\Messenger\CloudEvents\Serializer\UuidGenerator;
 use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Uid\Factory\RandomBasedUuidFactory;
+use Symfony\Component\Uid\UuidV4;
 
 class CloudEventsSerializerTest extends TestCase
 {
@@ -28,7 +28,7 @@ class CloudEventsSerializerTest extends TestCase
             new EnvelopeConverter(
                 $this->createMessageRegistry(),
                 new UuidGenerator(
-                    new UuidFactory()
+                    new RandomBasedUuidFactory(UuidV4::class)
                 )
             ),
             new Normalizer(
@@ -54,7 +54,7 @@ class CloudEventsSerializerTest extends TestCase
             new EnvelopeConverter(
                 $this->createMessageRegistry(),
                 new UuidGenerator(
-                    new UuidFactory()
+                    new RandomBasedUuidFactory(UuidV4::class)
                 )
             ),
             new Normalizer(

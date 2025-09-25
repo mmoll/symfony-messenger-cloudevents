@@ -11,8 +11,6 @@ services:
 
   Stegeman\Messenger\CloudEvents\Normalizer\V1\Normalizer:
 
-  Ramsey\Uuid\UuidFactory:
-  Ramsey\Uuid\UuidFactoryInterface: '@Ramsey\Uuid\UuidFactory'
   Stegeman\Messenger\CloudEvents\Serializer\UuidGenerator:
   Stegeman\Messenger\CloudEvents\Serializer\IdGeneratorInterface: '@Stegeman\Messenger\CloudEvents\Serializer\UuidGenerator'
 
