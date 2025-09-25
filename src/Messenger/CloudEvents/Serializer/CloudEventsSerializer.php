@@ -8,7 +8,6 @@ use Stegeman\Messenger\CloudEvents\Normalizer\DenormalizerInterface;
 use Stegeman\Messenger\CloudEvents\Normalizer\NormalizerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
-use JMS\Serializer;
 
 readonly class CloudEventsSerializer implements SerializerInterface
 {

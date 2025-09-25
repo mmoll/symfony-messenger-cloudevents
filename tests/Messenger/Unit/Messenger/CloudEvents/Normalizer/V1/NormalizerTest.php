@@ -4,11 +4,11 @@ namespace Stegeman\Tests\Messenger\Unit\Messenger\CloudEvents\Normalizer\V1;
 
 use CloudEvents\Serializers\Normalizers\V1\NormalizerInterface;
 use CloudEvents\V1\CloudEventInterface;
-use JMS\Serializer\SerializerInterface;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Stegeman\Messenger\CloudEvents\Normalizer\V1\Normalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class NormalizerTest extends TestCase
 {
@@ -92,7 +92,7 @@ class NormalizerTest extends TestCase
             ->with(
                 $serializerInput,
                 'json',
-                null
+                []
             )
             ->willReturn(json_encode($serializerInput));
 

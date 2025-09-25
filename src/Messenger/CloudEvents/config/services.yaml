@@ -23,7 +23,6 @@ services:
         arguments: [ 'event.test-event', 'App\Domain\Event\TestEvent' ]
 
   Stegeman\Messenger\CloudEvents\Serializer\MessageRegistryInterface: '@Stegeman\Messenger\CloudEvents\Serializer\MessageRegistry'
-  JMS\Serializer\Serializer:
 
   Stegeman\Messenger\CloudEvents\Converter\V1\EnvelopeConverter:
     arguments:

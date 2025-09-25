@@ -4,7 +4,6 @@ namespace Stegeman\Tests\Messenger\Integration\Messenger\CloudEvents;
 
 use CloudEvents\Serializers\Normalizers\V1\Denormalizer as SdkDenormalizer;
 use CloudEvents\Serializers\Normalizers\V1\Normalizer as SdkNormalizer;
-use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Stegeman\Messenger\CloudEvents\Converter\V1\EnvelopeConverter;
@@ -16,8 +15,11 @@ use Stegeman\Messenger\CloudEvents\Serializer\CloudEventsSerializer;
 use Stegeman\Messenger\CloudEvents\Serializer\MessageRegistryInterface;
 use Stegeman\Messenger\CloudEvents\Serializer\UuidGenerator;
 use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Uid\Factory\RandomBasedUuidFactory;
 use Symfony\Component\Uid\UuidV4;
+use Symfony\Component\Serializer\Serializer;
 
 class CloudEventsSerializerTest extends TestCase
 {
@@ -33,11 +35,11 @@ class CloudEventsSerializerTest extends TestCase
             ),
             new Normalizer(
                 new SdkNormalizer(),
-                SerializerBuilder::create()->build(),
+                new Serializer([new ObjectNormalizer()], [new JsonEncoder()]),
             ),
             new Denormalizer(
                 $this->createMessageRegistry(),
-                SerializerBuilder::create()->build(),
+                new Serializer(),
                 new SdkDenormalizer()
             )
         );
@@ -59,11 +61,11 @@ class CloudEventsSerializerTest extends TestCase
             ),
             new Normalizer(
                 new SdkNormalizer(),
-                SerializerBuilder::create()->build()
+                new Serializer()
             ),
             new Denormalizer(
                 $this->createMessageRegistry(),
-                SerializerBuilder::create()->build(),
+                new Serializer([new ObjectNormalizer()], [new JsonEncoder()]),
                 new SdkDenormalizer(),
             )
         );

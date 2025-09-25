@@ -4,7 +4,6 @@ namespace Stegeman\Tests\Messenger\Unit\CloudEvents\Converter\V1;
 
 use CloudEvents\V1\CloudEvent;
 use CloudEvents\V1\CloudEventImmutable;
-use JMS\Serializer\SerializerInterface;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

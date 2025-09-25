@@ -13,10 +13,11 @@
     "require": {
         "symfony/messenger": "^7.3",
         "cloudevents/sdk-php": "^1.1",
-        "jms/serializer": "^3.30",
         "symfony/http-kernel": "^7.3",
         "symfony/config": "^7.3",
         "symfony/dependency-injection": "^7.3",
+        "symfony/serializer": "^7.3",
+        "symfony/property-access": "^7.3",
         "symfony/uid": "^7.3"
     },
     "require-dev": {

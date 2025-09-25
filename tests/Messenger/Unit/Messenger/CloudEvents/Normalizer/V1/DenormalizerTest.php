@@ -3,7 +3,6 @@
 namespace Stegeman\Tests\Messenger\Unit\Messenger\CloudEvents\Normalizer\V1;
 
 use CloudEvents\V1\CloudEventInterface;
-use JMS\Serializer\SerializerInterface;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -11,6 +10,7 @@ use Stegeman\Messenger\CloudEvents\Normalizer\V1\Denormalizer;
 use CloudEvents\Serializers\Normalizers\V1\DenormalizerInterface;
 use Stegeman\Messenger\CloudEvents\Serializer\MessageRegistryInterface;
 use Stegeman\Tests\Messenger\Unit\Messenger\CloudEvents\DummyEvent;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class DenormalizerTest extends TestCase
 {

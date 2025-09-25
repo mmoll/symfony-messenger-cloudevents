@@ -4,9 +4,9 @@ namespace Stegeman\Messenger\CloudEvents\Normalizer\V1;
 
 use CloudEvents\CloudEventInterface;
 use CloudEvents\Serializers\Normalizers\V1\DenormalizerInterface as SdkDenormalizerInterface;
-use JMS\Serializer\SerializerInterface;
 use Stegeman\Messenger\CloudEvents\Normalizer\DenormalizerInterface;
 use Stegeman\Messenger\CloudEvents\Serializer\MessageRegistryInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 readonly class Denormalizer implements DenormalizerInterface
 {
